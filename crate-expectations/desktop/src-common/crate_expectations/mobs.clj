@@ -1,6 +1,8 @@
 (ns crate-expectations.mobs
   (:require [play-clj.core :refer [key-pressed?]]
-            [crate-expectations.world :as world]))
+            [play-clj.math :refer [rectangle]]
+            [crate-expectations.world :as world]
+            [crate-expectations.platforms :as platforms]))
 
 (defn- decelerate [v]
   (let [new-v (* world/deceleration v)]
@@ -12,9 +14,11 @@
   (assoc {:angle 0
           :x x
           :y y 
+          :hit-box (rectangle x y 16 32)
           :x-velocity 0
           :y-velocity 0
           :on-floor? false
+          :mob? true
           }
          tag true))
 
@@ -25,34 +29,52 @@
     :default    n
     ))
 
-(defn- get-x-velocity [e] 
-  (cond
-    (key-pressed? :left)  (* -1 world/max-velocity)
-    (key-pressed? :right) world/max-velocity
-    :default              (:x-velocity e)
+(defn- get-x-velocity [tag e]
+  (if (tag e)
+    (cond
+      (key-pressed? :left)  (* -1 world/max-velocity)
+      (key-pressed? :right) world/max-velocity
+      :default              (:x-velocity e)
+      )
+    (:x-velocity e)
     ))
 
-(defn- get-y-velocity [{:keys [y-velocity on-floor?]}] 
-  (cond
-    (key-pressed? :up)   (if (and on-floor? (> 0 y-velocity)) world/jump-velocity y-velocity)
-    :default             y-velocity 
+(defn- get-y-velocity [tag {:keys [y-velocity on-floor?] :as e}] 
+  (if (tag e)
+    (cond
+      (key-pressed? :up)   (if (and on-floor? (> 0 y-velocity)) world/jump-velocity y-velocity)
+      :default             y-velocity 
+      )
+    (:y-velocity e)
     ))
 
 (defn move [{:keys [delta-time]} {:keys [x y] :as e}]
-  (let [x-velocity (get-x-velocity e)
-        y-velocity (+ (get-y-velocity e) world/gravity) 
-        delta-x (* delta-time x-velocity world/pixels-per-move)
-        delta-y (* delta-time y-velocity world/pixels-per-move)]
-    (assoc e
-           :x (+ x delta-x)
-           :y (+ y delta-y) 
-           :x-velocity (decelerate x-velocity)
-           :y-velocity (decelerate y-velocity) 
-           )))
+  (if (:mob? e)
+    (let [x-velocity (get-x-velocity :player e)
+          y-velocity (+ (get-y-velocity :player e) world/gravity) 
+          delta-x (* delta-time x-velocity world/pixels-per-move)
+          delta-y (* delta-time y-velocity world/pixels-per-move)]
+      (assoc e
+             :x (+ x delta-x)
+             :y (+ y delta-y) 
+             :x-velocity (decelerate x-velocity)
+             :y-velocity (decelerate y-velocity) 
+             :delta-x delta-x
+             :delta-y delta-y
+             ))
+    e))
 
-(defn clip [{:keys [x y] :as e}]
-  (let [new-y (clamp y 0 world/height)]
-  (assoc e
-         :x (clamp x 0 world/width)
-         :y new-y
-         :on-floor? (= new-y 0))))
+(defn clip [entities {:keys [x y delta-x delta-y] :as e}]
+  (if (:mob? e)
+    (let [old-x (- x delta-x)
+          old-y (- y delta-y)
+          on-platform? (platforms/on-platform? entities old-x old-y)
+          new-y (clamp y 0 world/height)
+          down? (> old-y new-y)
+          ]
+      (assoc e
+             :x (clamp x 0 world/width)
+             :y (if (and down? on-platform?) old-y new-y)
+             :on-floor? (or on-platform? (= new-y 0))))
+    e
+    ))

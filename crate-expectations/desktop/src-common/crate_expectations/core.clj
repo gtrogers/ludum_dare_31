@@ -3,6 +3,7 @@
             [play-clj.ui :refer :all]
             [crate-expectations.world :as world]
             [crate-expectations.mobs :as mobs]
+            [crate-expectations.platforms :as platforms]
             ))
 
 (defscreen main-screen
@@ -11,8 +12,11 @@
     (update! screen :camera (orthographic):renderer (stage))
     [
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
-            (mobs/mob-data 0 0 :player)
-            ) 
+            (mobs/mob-data 0 0 :player)) 
+     (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
+            (platforms/platform-data 0 80 64 8 :platform-1))
+     (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
+            (platforms/platform-data 320 80 64 8 :platform-2))
      ])
 
   :on-render
@@ -21,7 +25,7 @@
     (->> 
       (map (fn [entity]
              (->> (mobs/move screen entity)
-                  (mobs/clip))) entities) 
+                  (mobs/clip entities))) entities) 
       (render! screen)) 
     )
 
