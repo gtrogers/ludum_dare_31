@@ -31,8 +31,8 @@
 (defn- get-x-velocity [tag e]
   (if (tag e)
     (cond
-      (key-pressed? :left)  (* -1 world/max-velocity)
-      (key-pressed? :right) world/max-velocity
+      (key-pressed? :a)  (* -1 world/max-velocity)
+      (key-pressed? :d) world/max-velocity
       :default              (:x-velocity e)
       )
     (:x-velocity e)
@@ -41,7 +41,7 @@
 (defn- get-y-velocity [tag {:keys [y-velocity on-floor?] :as e}] 
   (if (tag e)
     (cond
-      (key-pressed? :up)   (if (and on-floor? (> 0 y-velocity)) world/jump-velocity y-velocity)
+      (key-pressed? :w)   (if (and on-floor? (> 0 y-velocity)) world/jump-velocity y-velocity)
       :default             y-velocity 
       )
     (:y-velocity e)
@@ -49,8 +49,8 @@
 
 (defn move [{:keys [delta-time]} {:keys [x y] :as e}]
   (if (:mob? e)
-    (let [x-velocity (get-x-velocity :player e)
-          y-velocity (+ (get-y-velocity :player e) world/gravity) 
+    (let [x-velocity (get-x-velocity :player? e)
+          y-velocity (+ (get-y-velocity :player? e) world/gravity) 
           delta-x (* delta-time x-velocity world/pixels-per-move)
           delta-y (* delta-time y-velocity world/pixels-per-move)]
       (assoc e

@@ -23,12 +23,11 @@
     [
      (texture "test_background.png")
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
-            (mobs/mob-data 0 0 :player)) 
+            (mobs/mob-data 0 0 :player?)) 
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 0 80 64 8 :platform-1))
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 320 80 64 8 :platform-2))
-     (enemies/enemy 100 100 :test)
      ])
 
   :on-render
@@ -41,6 +40,7 @@
                   (crates/flash-crate! screen)
                   crates/arm-crate!
                   crates/open-crate! 
+                  (enemies/logic (find-first :player? entities))
                   )) entities) 
       spawn-and-destroy
       (render! screen)) 
