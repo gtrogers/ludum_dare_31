@@ -43,8 +43,11 @@
       (map (fn [entity]
              (->> (mobs/move screen entity)
                   (mobs/clip entities)
-                  (crates/open-crates! screen)
+                  (crates/flash-crate! screen)
+                  crates/arm-crate!
+                  (crates/crate-mind)
                   )) entities) 
+      (remove :destroy!)
       (render! screen)) 
     )
 
@@ -58,7 +61,8 @@
     )
 
   :on-resize
-  (fn [screen entities] (height! screen world/height)))
+  (fn [screen entities] (height! screen world/height))
+  )
 
 (defscreen error-screen
   :on-render
