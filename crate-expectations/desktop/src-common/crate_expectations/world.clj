@@ -1,5 +1,6 @@
 (ns crate-expectations.world)
 
+(def ^:const pixels-per-move 8)
 (def ^:const gravity -2.5)
 (def ^:const damping 0.3)
 (def ^:const deceleration 0.9)

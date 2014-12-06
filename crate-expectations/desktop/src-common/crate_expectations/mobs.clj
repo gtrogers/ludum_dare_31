@@ -41,8 +41,8 @@
 (defn move [{:keys [delta-time]} {:keys [x y] :as e}]
   (let [x-velocity (get-x-velocity e)
         y-velocity (+ (get-y-velocity e) world/gravity) 
-        delta-x (* delta-time x-velocity)
-        delta-y (* delta-time y-velocity)]
+        delta-x (* delta-time x-velocity world/pixels-per-move)
+        delta-y (* delta-time y-velocity world/pixels-per-move)]
     (assoc e
            :x (+ x delta-x)
            :y (+ y delta-y) 
