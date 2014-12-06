@@ -1,6 +1,6 @@
 (ns crate-expectations.mobs
   (:require [play-clj.core :refer [key-pressed?]]
-            [play-clj.math :refer [rectangle]]
+            [play-clj.math :refer [rectangle rectangle!]]
             [crate-expectations.world :as world]
             [crate-expectations.platforms :as platforms]))
 
@@ -14,7 +14,6 @@
   (assoc {:angle 0
           :x x
           :y y 
-          :hit-box (rectangle x y 16 32)
           :x-velocity 0
           :y-velocity 0
           :on-floor? false
@@ -69,12 +68,17 @@
     (let [old-x (- x delta-x)
           old-y (- y delta-y)
           on-platform? (platforms/on-platform? entities old-x old-y)
-          new-y (clamp y 0 world/height)
+          new-y (clamp y world/base world/height)
           down? (> old-y new-y)
+          used-y (if (and down? on-platform?) old-y new-y)
+          used-x (clamp x 0 world/width)
+          hit-box (when-let [hb (:hit-box e)] (rectangle! hb :set-position used-x (+ 56 used-y))) ;; TODO record hitbox height offset on entities
           ]
       (assoc e
-             :x (clamp x 0 world/width)
-             :y (if (and down? on-platform?) old-y new-y)
-             :on-floor? (or on-platform? (= new-y 0))))
+             :x used-x
+             :y used-y 
+             :on-floor? (or on-platform? (= used-y world/base))
+             :hit-box hit-box
+             ))
     e
     ))

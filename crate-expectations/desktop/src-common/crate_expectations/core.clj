@@ -1,9 +1,11 @@
 (ns crate-expectations.core
   (:require [play-clj.core :refer :all]
             [play-clj.ui :refer :all]
+            [play-clj.g2d :refer :all]
             [crate-expectations.world :as world]
             [crate-expectations.mobs :as mobs]
             [crate-expectations.platforms :as platforms]
+            [crate-expectations.crates :as crates]
             ))
 
 (defscreen main-screen
@@ -11,12 +13,15 @@
   (fn [screen entities]
     (update! screen :camera (orthographic):renderer (stage))
     [
+     (texture "test_background.png")
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
             (mobs/mob-data 0 0 :player)) 
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 0 80 64 8 :platform-1))
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 320 80 64 8 :platform-2))
+     (merge (shape :filled :rect 0 0 64 64 :set-color (color :red))
+            (crates/crate-data 200 150 :crate-1))
      ])
 
   :on-render
@@ -30,7 +35,13 @@
     )
 
   :on-key-down
-  (fn [screen entities])
+  (fn [screen entities]
+    (cond 
+      (key-pressed? :p) (prn (filter :crate-1 entities))
+      (key-pressed? :r) (on-gl  (set-screen! crate-expectations main-screen)) 
+      
+      ) 
+    )
 
   :on-resize
   (fn [screen entities] (height! screen world/height)))
@@ -47,6 +58,7 @@
 
 ;; TODO: better error handling
 ;; Run this to reset --> (on-gl  (set-screen! crate-expectations main-screen)))
+
 (set-screen-wrapper!
   (fn  [screen screen-fn]
         (clear!)
