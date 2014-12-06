@@ -42,7 +42,9 @@
     (->> 
       (map (fn [entity]
              (->> (mobs/move screen entity)
-                  (mobs/clip entities))) entities) 
+                  (mobs/clip entities)
+                  (crates/open-crates! screen)
+                  )) entities) 
       (render! screen)) 
     )
 
