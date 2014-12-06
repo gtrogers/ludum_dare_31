@@ -21,9 +21,9 @@
     (update! screen :camera (orthographic):renderer (stage))
     (add-timer! screen :spawn-crate 1 2)
     [
-     (texture "test_background.png")
+     (texture "warehouse.png")
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
-            (mobs/mob-data 0 0 :player?)) 
+            (mobs/mob-data 200 100 :player?)) 
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 0 80 64 8 :platform-1))
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
@@ -50,6 +50,7 @@
   (fn [screen entities]
     (cond 
       (key-pressed? :r) (on-gl  (set-screen! crate-expectations main-screen)) 
+      (key-pressed? :p) (prn (find-first :player? entities)) 
       
       ) 
     )
