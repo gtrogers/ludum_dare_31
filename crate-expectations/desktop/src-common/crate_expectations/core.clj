@@ -8,6 +8,8 @@
             [crate-expectations.crates :as crates]
             ))
 
+(declare crate-expectations main-screen error-screen)
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -20,8 +22,18 @@
             (platforms/platform-data 0 80 64 8 :platform-1))
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 320 80 64 8 :platform-2))
-     (merge (shape :filled :rect 0 0 64 64 :set-color (color :red))
-            (crates/crate-data 200 150 :crate-1))
+     (merge (texture "crate_test.png")
+            (crates/crate-data (rand 310) 300 :crate-1))
+     (merge (texture "crate_test.png")
+            (crates/crate-data (rand 310) 300 :crate-2))
+     (merge (texture "crate_test.png")
+            (crates/crate-data (rand 310) 300 :crate-3))
+     (merge (texture "crate_test.png")
+            (crates/crate-data (rand 310) 200 :crate-1))
+     (merge (texture "crate_test.png")
+            (crates/crate-data (rand 310) 200 :crate-2))
+     (merge (texture "crate_test.png")
+            (crates/crate-data (rand 310) 200 :crate-3))
      ])
 
   :on-render
