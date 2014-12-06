@@ -31,11 +31,26 @@
 
   :on-key-down
   (fn [screen entities])
-  
+
   :on-resize
   (fn [screen entities] (height! screen world/height)))
+
+(defscreen error-screen
+  :on-render
+  (fn  [screen entities]
+    (clear! 0.5 0.5 0.5 1.0)))
 
 (defgame crate-expectations
   :on-create
   (fn [this]
     (set-screen! this main-screen)))
+
+;; TODO: better error handling
+;; Run this to reset --> (on-gl  (set-screen! crate-expectations main-screen)))
+(set-screen-wrapper!
+  (fn  [screen screen-fn]
+        (clear!)
+    (try  (screen-fn)
+         (catch Exception e
+           (.printStackTrace e)
+           (set-screen! crate-expectations error-screen)))))
