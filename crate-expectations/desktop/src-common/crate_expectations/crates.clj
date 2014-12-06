@@ -34,7 +34,11 @@
     (let [time-since-armed (- (TimeUtils/millis) armed-time)]
       (if (> time-since-armed 2500)
         (assoc e :destroy! true) 
-        e 
-        )) 
-    e
-    ))
+        e)) 
+    e))
+
+(defn spawn [entities]
+  (let [num-crates (count (filter :crate? entities))]
+    (if (< num-crates 5) (conj entities (merge (texture "crate_test.png")
+                                               (crate-data (rand 310) 200 :spawned-crate)))
+      entities)))

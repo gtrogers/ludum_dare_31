@@ -14,6 +14,7 @@
   :on-show
   (fn [screen entities]
     (update! screen :camera (orthographic):renderer (stage))
+    (add-timer! screen :spawn-crate 1 2)
     [
      (texture "test_background.png")
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
@@ -22,18 +23,6 @@
             (platforms/platform-data 0 80 64 8 :platform-1))
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 320 80 64 8 :platform-2))
-     (merge (texture "crate_test.png")
-            (crates/crate-data (rand 310) 300 :crate-1))
-     (merge (texture "crate_test.png")
-            (crates/crate-data (rand 310) 300 :crate-2))
-     (merge (texture "crate_test.png")
-            (crates/crate-data (rand 310) 300 :crate-3))
-     (merge (texture "crate_test.png")
-            (crates/crate-data (rand 310) 200 :crate-1))
-     (merge (texture "crate_test.png")
-            (crates/crate-data (rand 310) 200 :crate-2))
-     (merge (texture "crate_test.png")
-            (crates/crate-data (rand 310) 200 :crate-3))
      ])
 
   :on-render
@@ -45,7 +34,7 @@
                   (mobs/clip entities)
                   (crates/flash-crate! screen)
                   crates/arm-crate!
-                  (crates/crate-mind)
+                  crates/open-crate! 
                   )) entities) 
       (remove :destroy!)
       (render! screen)) 
@@ -54,7 +43,6 @@
   :on-key-down
   (fn [screen entities]
     (cond 
-      (key-pressed? :p) (prn (filter :crate-1 entities))
       (key-pressed? :r) (on-gl  (set-screen! crate-expectations main-screen)) 
       
       ) 
@@ -62,7 +50,11 @@
 
   :on-resize
   (fn [screen entities] (height! screen world/height))
-  )
+
+  :on-timer
+  (fn [screen entities]
+    (case (:id screen)
+      :spawn-crate (crates/spawn entities))))
 
 (defscreen error-screen
   :on-render
