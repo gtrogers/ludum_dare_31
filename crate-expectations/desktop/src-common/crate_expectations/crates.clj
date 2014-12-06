@@ -40,5 +40,5 @@
 (defn spawn [entities]
   (let [num-crates (count (filter :crate? entities))]
     (if (< num-crates 5) (conj entities (merge (texture "crate_test.png")
-                                               (crate-data (rand 310) 200 :spawned-crate)))
+                                               (crate-data (rand 310) 400 :spawned-crate)))
       entities)))

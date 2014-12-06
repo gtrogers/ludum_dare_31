@@ -24,7 +24,7 @@
                              (< x player-x) 4 
                              :default x-velocity) 
             new-y-velocity (cond 
-                             (and (< y player-y) on-floor?) 16
+                             (and (< y player-y) on-floor?) 24
                              :default y-velocity)]
         (-> e
             (assoc :x-velocity new-x-velocity)
