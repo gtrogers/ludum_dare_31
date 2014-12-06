@@ -33,7 +33,7 @@
   (if-let [armed-time armed] 
     (let [time-since-armed (- (TimeUtils/millis) armed-time)]
       (if (> time-since-armed 2500)
-        (assoc e :destroy! true) 
+        (assoc e :spawn-and-destroy! true) 
         e)) 
     e))
 

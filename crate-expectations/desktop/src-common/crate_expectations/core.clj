@@ -6,9 +6,14 @@
             [crate-expectations.mobs :as mobs]
             [crate-expectations.platforms :as platforms]
             [crate-expectations.crates :as crates]
+            [crate-expectations.enemies :as enemies]
             ))
 
 (declare crate-expectations main-screen error-screen)
+
+(defn- spawn-and-destroy [entities]
+  (map (fn [{:keys [x y spawn-and-destroy!] :as e}]
+         (if spawn-and-destroy! (enemies/enemy x y :test) e)) entities))
 
 (defscreen main-screen
   :on-show
@@ -23,6 +28,7 @@
             (platforms/platform-data 0 80 64 8 :platform-1))
      (merge (shape :filled :rect 0 0 64 8 :set-color (color :white))
             (platforms/platform-data 320 80 64 8 :platform-2))
+     (enemies/enemy 100 100 :test)
      ])
 
   :on-render
@@ -36,7 +42,7 @@
                   crates/arm-crate!
                   crates/open-crate! 
                   )) entities) 
-      (remove :destroy!)
+      spawn-and-destroy
       (render! screen)) 
     )
 
