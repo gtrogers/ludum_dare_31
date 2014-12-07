@@ -46,7 +46,7 @@
   (fn [screen entities]
     (update! screen :camera (orthographic):renderer (stage))
     (add-timer! screen :spawn-crate 1 2)
-    (add-timer! screen :spawn-bullets 0.1 0.1)
+    (add-timer! screen :spawn-bullets 0 0.2)
     [
      (texture "warehouse.png")
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
@@ -70,6 +70,7 @@
                   crates/arm-crate!
                   crates/open-crate! 
                   (enemies/logic (find-first :player? entities))
+                  (enemies/bullet-collisions entities)
                   (bullets/update-bullet entities) 
                   update-hit-box
                   )) entities)

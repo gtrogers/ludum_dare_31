@@ -1,6 +1,9 @@
-(ns crate-expectations.world)
+(ns crate-expectations.world
+  (:require [play-clj.math :refer [rectangle!]])
+  )
 
 (def ^:const bullet-speed 3)
+(def ^:const knockback-factor 8)
 (def ^:const pixels-per-move 8)
 (def ^:const gravity -2.5)
 (def ^:const damping 0.3)
@@ -17,4 +20,8 @@
       (> base y)
       (< height y)
       )
+  )
+
+(defn overlap? [r1 r2]
+  (rectangle! r1 :overlaps r2)
   )

@@ -29,15 +29,11 @@
     (assoc bullet :x (+ x x-velocity))
   )
 
-(defn- overlap? [r1 r2]
-  (rectangle! r1 :overlaps r2)
-  )
-
 (defn- remove-collisions! [entities bullet]
   (let [ hit (find-first
                (fn [{:keys [hit-box enemy?] :as e}]
                  (when (and hit-box enemy?)
-                   (overlap? (:hit-box bullet) hit-box))) entities)]
+                   (world/overlap? (:hit-box bullet) hit-box))) entities)]
     (when-not hit bullet)
     )
   )
