@@ -62,8 +62,7 @@
                 (not player-invincible?) ""
                 text-present? current-text
                 )] 
-     (do (prn text-present? player-invincible?) (label! e :set-text text) e)) 
-    
+     (do (label! e :set-text text) e)) 
     e
     )
   )

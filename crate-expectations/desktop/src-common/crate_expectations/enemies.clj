@@ -8,8 +8,8 @@
 
 (def ^:private enemy-types {
                             :test {:hp 3
-                                   :width 32
-                                   :height 64
+                                   :width 28
+                                   :height 48
                                    :texture "snowmen.png"}
                             })
 
@@ -28,6 +28,7 @@
     (-> (first sprites) 
         (merge (mobs/mob-data x y :spawned-enemy))
         (assoc :hit-box (rectangle x y (:width template) (:height template))
+               :hit-box-offsets {:x 2 :y 0}
                :enemy? true
                :hp (:hp template)
                :anim anim

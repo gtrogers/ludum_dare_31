@@ -25,7 +25,11 @@
          tag true))
 
 (defn player-data [x y tag]
-  (assoc (mob-data x y tag) :hit-box (rectangle x y 16 32) :hp world/starting-health :last-hit 0) 
+  (assoc (mob-data x y tag)
+         :hit-box (rectangle x y 12 26)
+         :hit-box-offsets {:x 2 :y 0}
+         :hp world/starting-health
+         :last-hit 0) 
   )
 
 (defn player [x y tag screen]
