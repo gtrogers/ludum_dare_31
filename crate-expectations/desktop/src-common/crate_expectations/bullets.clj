@@ -20,7 +20,7 @@
          (bullet-data x y x-velocity y-velocity tag)))
 
 (defn spawn [{:keys [x y] :as player}]
-  (let [bullet-height (+ y 18)]
+  (let [bullet-height (+ y 10)]
   (cond (key-pressed? :left)  (bullet x bullet-height (* -1 world/bullet-speed) 0 :spawned-bullet)
         (key-pressed? :right) (bullet (+ x 16) bullet-height world/bullet-speed 0 :spawned-bullet) 
         )))
