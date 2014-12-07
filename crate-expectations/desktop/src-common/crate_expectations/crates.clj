@@ -12,9 +12,9 @@
   ;; TODO better organise entitiy creation
   (merge (mobs/mob-data x y tag) {:crate? true
                                   :platform? true
-                                  :hit-box (rectangle x (+ y 56) 64 world/pixels-per-move)
-                                  :hit-box-offsets {:x 0 :y 56}
-                                  :blink (animation 0.15 [(texture "crate_test.png") (texture "crate_test_flash.png")] :set-play-mode  (play-mode :loop-pingpong))
+                                  :hit-box (rectangle x (+ y 50) 36 world/pixels-per-move)
+                                  :hit-box-offsets {:x 0 :y 50}
+                                  :blink (animation 0.15 [(texture "crate.png") (texture "crate_flashing.png")] :set-play-mode  (play-mode :loop-pingpong))
                                   }) 
   )
 
@@ -40,6 +40,6 @@
 
 (defn spawn [entities]
   (let [num-crates (count (filter :crate? entities))]
-    (if (< num-crates 5) (conj entities (merge (texture "crate_test.png")
+    (if (< num-crates 5) (conj entities (merge (texture "crate.png")
                                                (crate-data (rand 310) 400 :spawned-crate)))
       entities)))
