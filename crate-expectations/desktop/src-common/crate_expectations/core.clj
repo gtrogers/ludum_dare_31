@@ -49,8 +49,7 @@
     (add-timer! screen :spawn-bullets 0 0.2)
     [
      (texture "warehouse.png")
-     (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
-            (mobs/player-data 200 100 :player?)) 
+     (mobs/player 200 100 :player? screen)
      (merge (shape :filled :rect       0 0 80 8 :set-color (color 1 1 1 0))
             (platforms/platform-data 0 100 80 8 :platform-1))
      (merge (shape :filled :rect         0 0 80 8 :set-color (color 1 1 1 0))

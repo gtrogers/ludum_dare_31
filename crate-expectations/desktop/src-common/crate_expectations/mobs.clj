@@ -1,8 +1,11 @@
 (ns crate-expectations.mobs
   (:require [play-clj.core :refer [key-pressed? find-first]]
             [play-clj.math :refer [rectangle rectangle!]]
+            [play-clj.g2d :refer :all]
             [crate-expectations.world :as world]
-            [crate-expectations.platforms :as platforms]))
+            [crate-expectations.platforms :as platforms])
+  (:import [com.badlogic.gdx.utils TimeUtils])
+  )
 
 (defn- decelerate [v]
   (let [new-v (* world/deceleration v)]
@@ -22,7 +25,20 @@
          tag true))
 
 (defn player-data [x y tag]
-  (assoc (mob-data x y tag) :hit-box (rectangle x y 16 32) :hp 5) 
+  (assoc (mob-data x y tag) :hit-box (rectangle x y 16 32) :hp 5 :last-hit 0) 
+  )
+
+(defn player [x y tag screen]
+  (let [tex (texture! (texture "player.png") :split 16 32) 
+        sprites (map (fn [i] (texture (aget tex 0 i))) [0 1 2])
+        right-animation (animation 0.15 sprites :set-play-mode (play-mode :loop-pingpong))
+        left-animation (animation 0.15 (map #(texture % :flip true false) sprites) :set-play-mode (play-mode :loop-pingpong))
+        ]
+    (merge (animation->texture screen right-animation) 
+     (assoc (player-data x y tag) :right-animation right-animation
+            :left-animation left-animation
+            )) 
+    )
   )
 
 (defn- clamp [n lower upper]
@@ -51,13 +67,24 @@
     (:y-velocity e)
     ))
 
-(defn move [{:keys [delta-time]} {:keys [x y] :as e}]
+
+(defn animate-player [screen {:keys [player? right-animation left-animation x-velocity] :as e}]
+  (if player?
+   (cond 
+     (< 0 x-velocity) (merge e (animation->texture screen right-animation))
+     (> 0 x-velocity) (merge e (animation->texture screen left-animation))
+     :default         e
+     ) 
+    e)
+  )
+
+(defn move [{:keys [delta-time] :as screen} {:keys [x y] :as e}]
   (if (:mob? e)
     (let [x-velocity (get-x-velocity :player? e)
           y-velocity (+ (get-y-velocity :player? e) world/gravity) 
           delta-x (* delta-time x-velocity world/pixels-per-move)
           delta-y (* delta-time y-velocity world/pixels-per-move)]
-      (assoc e
+      (assoc (animate-player screen e)
              :x (+ x delta-x)
              :y (+ y delta-y) 
              :x-velocity (decelerate x-velocity)
@@ -76,16 +103,22 @@
           down? (> old-y new-y)
           used-y (if (and down? on-platform?) old-y new-y)
           used-x (clamp x 0 world/width)
-          ;;hit-box (when-let [hb (:hit-box e)] (rectangle! hb :set-position used-x (+ 56 used-y))) ;; TODO record hitbox height offset on entities
           ]
       (assoc e
              :x used-x
              :y used-y 
              :on-floor? (or on-platform? (= used-y world/base))
-             ;;:hit-box hit-box
              ))
     e
     ))
+
+(defn- player-hit [{:keys [last-hit hp] :as player}]
+  (if (> (- (TimeUtils/millis) last-hit) 1500)
+    (-> player
+        (assoc :hp (dec hp)) 
+        (assoc :game-over? (when (< (:hp player) 0) true)) 
+        (assoc :last-hit (TimeUtils/millis))) 
+    player))
 
 ;; TODO make a player namespace?
 (defn player-collisions [entities {:keys [player?] :as e}]
@@ -96,11 +129,7 @@
                                 )
                               ) entities)]
       (if enemy
-        
-        (-> e
-            (assoc :hp (dec (:hp e)))
-            (assoc :game-over? (when (< (:hp e) 0) true))
-            ) 
+        (player-hit e)
         e
         )
       )
