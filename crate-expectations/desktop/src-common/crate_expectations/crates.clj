@@ -11,9 +11,10 @@
 (defn crate-data [x y tag]
   ;; TODO better organise entitiy creation
   (merge (mobs/mob-data x y tag) {:crate? true
+                                  :crate-id (TimeUtils/nanoTime)
                                   :platform? true
-                                  :hit-box (rectangle x (+ y 50) 36 world/pixels-per-move)
-                                  :hit-box-offsets {:x 0 :y 50}
+                                  :hit-box (rectangle x y 40 54)
+                                  :hit-box-offsets {:x 0 :y 0}
                                   :blink (animation 0.15 [(texture "crate.png") (texture "crate_flashing.png")] :set-play-mode  (play-mode :loop-pingpong))
                                   }) 
   )

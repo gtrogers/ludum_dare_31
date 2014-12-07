@@ -102,7 +102,7 @@
   (if (:mob? e)
     (let [old-x (- x delta-x)
           old-y (- y delta-y)
-          on-platform? (platforms/on-platform? entities old-x old-y)
+          on-platform? (platforms/on-platform? entities (assoc e :x old-x :y old-y))
           new-y (clamp y world/base world/height)
           down? (> old-y new-y)
           used-y (if (and down? on-platform?) old-y new-y)

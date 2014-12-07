@@ -10,20 +10,35 @@
           :platform? true
           } tag true))
 
-(defn- platform-test [e x y]
-  ;; TODO use rectangle for platform collision detection
-  (when (:platform? e) (rectangle! (:hit-box e) :contains x y)))
+(defn- crate->crate-collisions [c1 c2]
+  (when-not (= (:crate-id c1) (:crate-id c2))
+    (rectangle! (:hit-box c1) :overlaps (:hit-box c2))
+    )
+  )
 
-(defn on-platform? [entities x y]
-  (some #(platform-test % x y) entities))
+(defn- regular-collisions [mob {:keys [hit-box y] :as platform}]
+  (let [platform-height (rectangle! hit-box :get-height)
+        platform-top (+ platform-height y -3)]
+    (and (> (:y mob) 
+            platform-top)
+         (rectangle! hit-box :overlaps (:hit-box mob)))))
+
+(defn- platform-test [mob e]
+  (when (:platform? e)
+    (if  (and (:crate? mob) (:crate? e)) 
+      (crate->crate-collisions mob e) 
+      (regular-collisions mob e))))
+
+(defn on-platform? [entities e]
+  (some #(platform-test e %) entities))
 
 (defn move-floating-platform 
   "Doesn't work yet - needs to transfer velocity to mobs"
   [{:keys [x floating-platform?] :as e}]
   (if floating-platform?
-  (let [new-x (if (< x world/width) (+ x world/platform-speed) 0)]
-    (assoc e :x new-x)
-    )
+    (let [new-x (if (< x world/width) (+ x world/platform-speed) 0)]
+      (assoc e :x new-x)
+      )
     e
     ) 
   )
