@@ -11,7 +11,8 @@
             [crate-expectations.bullets :as bullets]
             ))
 
-(declare crate-expectations main-screen error-screen game-over-screen)
+(declare crate-expectations main-screen error-screen)
+
 
 (defn- update-hit-box [{:keys [hit-box x y hit-box-offsets] :as e}]
   (if hit-box
@@ -67,6 +68,10 @@
     )
   )
 
+(defn- update-score [{:keys [score?] :as e}]
+  (if score? (do (label! e :set-text (str "Score " @world/score)) e) e)
+  )
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -84,12 +89,15 @@
             (platforms/platform-data 128 180 32 8 :floating-platform?))
      (assoc (label "Vigor 5/5" (color :white)) :x 330 :y 4 :health-meter? true)
      (assoc (label "Starting..." (color :yellow)) :x 8 :y 4 :profanity? true)
+     (assoc (label "Score 0" (color :white)) :x 175 :y 4 :score? true)
      ])
 
   :on-render
   (fn [screen entities]
     (clear!)
-    (when (find-first :game-over? entities) (set-screen! crate-expectations game-over-screen))
+    (when (find-first :game-over? entities)
+      (swap! world/score (constantly 0))
+      (set-screen! crate-expectations main-screen))
     (->> 
       (map (fn [entity]
              (->> (mobs/move screen entity)
@@ -105,6 +113,7 @@
                   update-hit-box
                   (update-health-meter (find-first :player? entities))
                   (update-profanity (find-first :player? entities))
+                  update-score 
                   )) entities)
       spawn-and-destroy
       (render! screen)) 
@@ -131,18 +140,6 @@
   :on-render
   (fn  [screen entities]
     (clear! 0.5 0.5 0.5 1.0)))
-
-(defscreen game-over-screen
-  :on-render
-  (fn  [screen entities]
-    (clear! 0 0.5 0.5 1.0))
-  
-  :on-key-down
-  (fn [screen entities]
-    (cond 
-      (key-pressed? :space) (set-screen! crate-expectations main-screen)) 
-    )
-  )
 
 (defgame crate-expectations
   :on-create

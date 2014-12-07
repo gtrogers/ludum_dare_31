@@ -2,6 +2,8 @@
   (:require [play-clj.math :refer [rectangle!]])
   )
 
+(def score (atom 0))
+
 (def ^:const starting-health 5)
 (def ^:const platform-speed 1)
 (def ^:const bullet-speed 3)

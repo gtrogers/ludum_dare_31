@@ -54,19 +54,22 @@
 ;; TODO all entities should have the same method of updating them
 
 (defn remove-if-dead! [enemy]
-  (when-not (< (:hp enemy) 0) enemy)
+  (if-not (< (:hp enemy) 0)
+    enemy
+    (do (swap! world/score inc) 
+        nil) 
+    )
   )
 
 (defn bullet-collisions [entities {:keys [enemy?] :as e}]
   (if enemy?
     (let [bullet (find-first (fn [{:keys [bullet? hit-box] :as bullet}]
-                            (when (and bullet? hit-box) (world/overlap? (:hit-box e) hit-box))
-                            ) entities)]
+                               (when (and bullet? hit-box) (world/overlap? (:hit-box e) hit-box))
+                               ) entities)]
       (if bullet
         (-> e
             (assoc :hp (dec (:hp e)))
             (assoc :x-velocity (* world/knockback-factor (:x-velocity bullet)))
-            ;;(assoc :y-velocity (* world/knockback-factor (:y-velocity bullet)))
             remove-if-dead!) 
         e)
       )
