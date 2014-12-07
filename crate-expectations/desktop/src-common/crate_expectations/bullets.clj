@@ -33,7 +33,7 @@
   (rectangle! r1 :overlaps r2)
   )
 
-(defn- collisions! [entities bullet]
+(defn- remove-collisions! [entities bullet]
   (let [ hit (find-first
                (fn [{:keys [hit-box enemy?] :as e}]
                  (when (and hit-box enemy?)
@@ -42,7 +42,12 @@
     )
   )
 
+(defn remove-offscreen-bullet! [{:keys [x y] :as bullet}]
+  (when-not (world/off-screen x y) bullet))
+
 (defn update-bullet [entities {:keys [bullet? x-velocity x] :as e}]
   (if bullet? 
-    (collisions! entities (move e)) 
+    (some->> (move e)
+             (remove-offscreen-bullet!)
+             (remove-collisions! entities))
     e))

@@ -10,3 +10,11 @@
 (def ^:const height 300)
 (def ^:const width 400)
 (def ^:const base 28)
+
+(defn off-screen [x y]
+  (or (> 0 x)
+      (< width x)
+      (> base y)
+      (< height y)
+      )
+  )
