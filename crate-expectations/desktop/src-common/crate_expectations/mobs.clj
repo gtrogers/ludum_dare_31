@@ -1,5 +1,5 @@
 (ns crate-expectations.mobs
-  (:require [play-clj.core :refer [key-pressed?]]
+  (:require [play-clj.core :refer [key-pressed? find-first]]
             [play-clj.math :refer [rectangle rectangle!]]
             [crate-expectations.world :as world]
             [crate-expectations.platforms :as platforms]))
@@ -20,6 +20,10 @@
           :mob? true
           }
          tag true))
+
+(defn player-data [x y tag]
+  (assoc (mob-data x y tag) :hit-box (rectangle x y 16 32) :hp 5) 
+  )
 
 (defn- clamp [n lower upper]
   (cond
@@ -82,3 +86,24 @@
              ))
     e
     ))
+
+;; TODO make a player namespace?
+(defn player-collisions [entities {:keys [player?] :as e}]
+  (if player?
+    (let [enemy (find-first (fn [{:keys [enemy? hit-box]}]
+                              (when (and enemy? hit-box)
+                                (world/overlap? hit-box (:hit-box e))
+                                )
+                              ) entities)]
+      (if enemy
+        
+        (-> e
+            (assoc :hp (dec (:hp e)))
+            (assoc :game-over? (when (< (:hp e) 0) true))
+            ) 
+        e
+        )
+      )
+    e
+    )
+  )

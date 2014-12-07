@@ -11,7 +11,7 @@
             [crate-expectations.bullets :as bullets]
             ))
 
-(declare crate-expectations main-screen error-screen)
+(declare crate-expectations main-screen error-screen game-over-screen)
 
 (defn- update-hit-box [{:keys [hit-box x y hit-box-offsets] :as e}]
   (if hit-box
@@ -50,7 +50,7 @@
     [
      (texture "warehouse.png")
      (merge (shape :filled :rect 0 0 16 32 :set-color (color :green))
-            (mobs/mob-data 200 100 :player?)) 
+            (mobs/player-data 200 100 :player?)) 
      (merge (shape :filled :rect       0 0 80 8 :set-color (color 1 1 1 0))
             (platforms/platform-data 0 100 80 8 :platform-1))
      (merge (shape :filled :rect         0 0 80 8 :set-color (color 1 1 1 0))
@@ -62,6 +62,7 @@
   :on-render
   (fn [screen entities]
     (clear!)
+    (when (find-first :game-over? entities) (set-screen! crate-expectations game-over-screen))
     (->> 
       (map (fn [entity]
              (->> (mobs/move screen entity)
@@ -72,6 +73,7 @@
                   (enemies/logic (find-first :player? entities))
                   (enemies/bullet-collisions entities)
                   (bullets/update-bullet entities) 
+                  (mobs/player-collisions entities)
                   update-hit-box
                   )) entities)
       spawn-and-destroy
@@ -101,6 +103,18 @@
   :on-render
   (fn  [screen entities]
     (clear! 0.5 0.5 0.5 1.0)))
+
+(defscreen game-over-screen
+  :on-render
+  (fn  [screen entities]
+    (clear! 0 0.5 0.5 1.0))
+  
+  :on-key-down
+  (fn [screen entities]
+    (cond 
+      (key-pressed? :space) (set-screen! crate-expectations main-screen)) 
+    )
+  )
 
 (defgame crate-expectations
   :on-create
