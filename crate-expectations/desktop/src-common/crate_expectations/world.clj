@@ -2,6 +2,7 @@
   (:require [play-clj.math :refer [rectangle!]])
   )
 
+(def ^:const platform-speed 1)
 (def ^:const bullet-speed 3)
 (def ^:const knockback-factor 8)
 (def ^:const pixels-per-move 8)

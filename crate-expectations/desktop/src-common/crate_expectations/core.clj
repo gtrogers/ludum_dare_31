@@ -50,12 +50,12 @@
     [
      (texture "warehouse.png")
      (mobs/player 200 100 :player? screen)
-     (merge (shape :filled :rect       0 0 80 8 :set-color (color 1 1 1 0))
-            (platforms/platform-data 0 100 80 8 :platform-1))
-     (merge (shape :filled :rect         0 0 80 8 :set-color (color 1 1 1 0))
-            (platforms/platform-data 320 100 80 8 :platform-2))
-     (merge (shape :filled :rect       0 0 64 8 :set-color (color 1 1 1 0))
-            (platforms/platform-data 112 180 64 8 :platform-2))
+     (merge (texture "platform_1.png")
+            (platforms/platform-data 0 100 64 8 :platform-1))
+     (merge (texture "platform_1.png")
+            (platforms/platform-data 336 100 64 8 :platform-2))
+     (merge (texture "platform_2.png")
+            (platforms/platform-data 128 180 32 8 :floating-platform?))
      ])
 
   :on-render
@@ -74,6 +74,7 @@
                   (bullets/update-bullet entities) 
                   (mobs/player-collisions entities)
                   update-hit-box
+                  platforms/move-floating-platform
                   )) entities)
       spawn-and-destroy
       (render! screen)) 
