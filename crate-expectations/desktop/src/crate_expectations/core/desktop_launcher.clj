@@ -9,8 +9,8 @@
   (Keyboard/enableRepeatEvents true)
   (let [config (LwjglApplicationConfiguration.)]
     (doto config
-      (-> .width (set! 1024))
-      (-> .height (set! 768))
+      (-> .width (set! 800))
+      (-> .height (set! 600))
       (-> .title (set! "Crate Expectations"))
       (-> .fullscreen (set! false)) ;; TODO how to do nice cross platform fullscreen - look into view ports
       (-> .resizable (set! false))

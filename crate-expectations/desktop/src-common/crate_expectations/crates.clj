@@ -13,6 +13,7 @@
   (merge (mobs/mob-data x y tag) {:crate? true
                                   :platform? true
                                   :hit-box (rectangle x (+ y 56) 64 world/pixels-per-move)
+                                  :hit-box-offsets {:x 0 :y 56}
                                   :blink (animation 0.15 [(texture "crate_test.png") (texture "crate_test_flash.png")] :set-play-mode  (play-mode :loop-pingpong))
                                   }) 
   )

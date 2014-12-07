@@ -72,13 +72,13 @@
           down? (> old-y new-y)
           used-y (if (and down? on-platform?) old-y new-y)
           used-x (clamp x 0 world/width)
-          hit-box (when-let [hb (:hit-box e)] (rectangle! hb :set-position used-x (+ 56 used-y))) ;; TODO record hitbox height offset on entities
+          ;;hit-box (when-let [hb (:hit-box e)] (rectangle! hb :set-position used-x (+ 56 used-y))) ;; TODO record hitbox height offset on entities
           ]
       (assoc e
              :x used-x
              :y used-y 
              :on-floor? (or on-platform? (= used-y world/base))
-             :hit-box hit-box
+             ;;:hit-box hit-box
              ))
     e
     ))
