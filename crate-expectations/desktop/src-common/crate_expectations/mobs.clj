@@ -112,9 +112,14 @@
     e
     ))
 
-(defn- player-hit [{:keys [last-hit hp] :as player}]
+(defn- player-hit [{:keys [x y] :as enemy} {:keys [last-hit hp] :as player}]
   (if (> (- (TimeUtils/millis) last-hit) 1500)
     (-> player
+        (assoc :x-velocity (if (> (:x player) x)
+                             world/player-knockback
+                             (* -1 world/player-knockback))) 
+        (assoc :y-velocity (/ world/jump-velocity 2))
+        (assoc :on-floor false)
         (assoc :hp (dec hp)) 
         (assoc :game-over? (when (< (:hp player) 0) true)) 
         (assoc :last-hit (TimeUtils/millis))) 
@@ -129,7 +134,7 @@
                                 )
                               ) entities)]
       (if enemy
-        (player-hit e)
+        (player-hit enemy e)
         e
         )
       )

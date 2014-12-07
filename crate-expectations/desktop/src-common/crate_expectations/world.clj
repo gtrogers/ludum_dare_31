@@ -10,6 +10,7 @@
 (def ^:const deceleration 0.9)
 (def ^:const max-velocity 15)
 (def ^:const jump-velocity (* 8 max-velocity))
+(def ^:const player-knockback (* 80))
 (def ^:const height 300)
 (def ^:const width 400)
 (def ^:const base 28)
