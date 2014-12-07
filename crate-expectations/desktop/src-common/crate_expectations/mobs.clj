@@ -25,7 +25,7 @@
          tag true))
 
 (defn player-data [x y tag]
-  (assoc (mob-data x y tag) :hit-box (rectangle x y 16 32) :hp 5 :last-hit 0) 
+  (assoc (mob-data x y tag) :hit-box (rectangle x y 16 32) :hp world/starting-health :last-hit 0) 
   )
 
 (defn player [x y tag screen]
@@ -112,8 +112,11 @@
     e
     ))
 
+(defn player-can-be-hurt? [{:keys [last-hit] :as player}]
+  (> (- (TimeUtils/millis) last-hit) 1500))
+
 (defn- player-hit [{:keys [x y] :as enemy} {:keys [last-hit hp] :as player}]
-  (if (> (- (TimeUtils/millis) last-hit) 1500)
+  (if (player-can-be-hurt? player)
     (-> player
         (assoc :x-velocity (if (> (:x player) x)
                              world/player-knockback
@@ -121,7 +124,7 @@
         (assoc :y-velocity (/ world/jump-velocity 2))
         (assoc :on-floor false)
         (assoc :hp (dec hp)) 
-        (assoc :game-over? (when (< (:hp player) 0) true)) 
+        (assoc :game-over? (when (< (- hp 2) 0) true)) 
         (assoc :last-hit (TimeUtils/millis))) 
     player))
 

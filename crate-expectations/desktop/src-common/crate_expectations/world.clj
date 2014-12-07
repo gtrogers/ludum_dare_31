@@ -2,6 +2,7 @@
   (:require [play-clj.math :refer [rectangle!]])
   )
 
+(def ^:const starting-health 5)
 (def ^:const platform-speed 1)
 (def ^:const bullet-speed 3)
 (def ^:const knockback-factor 8)
@@ -15,6 +16,8 @@
 (def ^:const height 300)
 (def ^:const width 400)
 (def ^:const base 28)
+
+(def ^:const profanities ["Humbug!" "Gadzooks!" "Egads!"])
 
 (defn off-screen [x y]
   (or (> 0 x)

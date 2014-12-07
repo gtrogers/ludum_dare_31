@@ -41,6 +41,33 @@
     )
   )
 
+(defn- update-health-meter [{:keys [hp] :as player} {:keys [health-meter?] :as e}]
+  (if health-meter?
+    (do
+    (label! e :set-text (str "Vigor " hp "/" world/starting-health))
+      e
+      ) 
+    e)
+  )
+
+(defn- update-profanity [player {:keys [profanity?] :as e}]
+  ;; this is pretty horrible, stateful, code
+  (if profanity?
+   (let [current-text (label! e :get-text)
+         text-present? (> (count current-text) 0) 
+         player-invincible? (not (mobs/player-can-be-hurt? player)) 
+         text (cond
+                (and (not text-present?) player-invincible?)
+                  (str "\"" (rand-nth world/profanities) "\"")
+                (not player-invincible?) ""
+                text-present? current-text
+                )] 
+     (do (prn text-present? player-invincible?) (label! e :set-text text) e)) 
+    
+    e
+    )
+  )
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -56,6 +83,8 @@
             (platforms/platform-data 336 100 64 8 :platform-2))
      (merge (texture "platform_2.png")
             (platforms/platform-data 128 180 32 8 :floating-platform?))
+     (assoc (label "Vigor 5/5" (color :white)) :x 330 :y 4 :health-meter? true)
+     (assoc (label "Starting..." (color :yellow)) :x 8 :y 4 :profanity? true)
      ])
 
   :on-render
@@ -73,8 +102,10 @@
                   (enemies/bullet-collisions entities)
                   (bullets/update-bullet entities) 
                   (mobs/player-collisions entities)
-                  update-hit-box
                   platforms/move-floating-platform
+                  update-hit-box
+                  (update-health-meter (find-first :player? entities))
+                  (update-profanity (find-first :player? entities))
                   )) entities)
       spawn-and-destroy
       (render! screen)) 
@@ -84,8 +115,6 @@
   (fn [screen entities]
     (cond 
       (key-pressed? :r) (on-gl  (set-screen! crate-expectations main-screen)) 
-      (key-pressed? :p) (prn (find-first :player? entities)) 
-      
       ) 
     )
 
