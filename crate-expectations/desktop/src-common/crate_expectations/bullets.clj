@@ -1,7 +1,7 @@
 (ns crate-expectations.bullets
   (:require [play-clj.g2d :refer [texture]] 
-            [play-clj.core :refer [key-pressed?]]
-            [play-clj.math :refer [rectangle]]
+            [play-clj.core :refer [key-pressed? find-first]]
+            [play-clj.math :refer [rectangle rectangle!]]
             [crate-expectations.mobs :as mobs]
             [crate-expectations.world :as world]
             ))
@@ -25,5 +25,24 @@
         (key-pressed? :right) (bullet (+ x 16) bullet-height world/bullet-speed 0 :spawned-bullet) 
         )))
 
-(defn update-bullet [{:keys [bullet? x-velocity x] :as e}]
-  (if bullet? (assoc e :x (+ x x-velocity)) e))
+(defn- move [{:keys [x x-velocity] :as bullet}]
+    (assoc bullet :x (+ x x-velocity))
+  )
+
+(defn- overlap? [r1 r2]
+  (rectangle! r1 :overlaps r2)
+  )
+
+(defn- collisions! [entities bullet]
+  (let [ hit (find-first
+               (fn [{:keys [hit-box enemy?] :as e}]
+                 (when (and hit-box enemy?)
+                   (overlap? (:hit-box bullet) hit-box))) entities)]
+    (when-not hit bullet)
+    )
+  )
+
+(defn update-bullet [entities {:keys [bullet? x-velocity x] :as e}]
+  (if bullet? 
+    (collisions! entities (move e)) 
+    e))

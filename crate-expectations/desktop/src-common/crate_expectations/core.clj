@@ -70,7 +70,7 @@
                   crates/arm-crate!
                   crates/open-crate! 
                   (enemies/logic (find-first :player? entities))
-                  bullets/update-bullet
+                  (bullets/update-bullet entities) 
                   update-hit-box
                   )) entities)
       spawn-and-destroy
