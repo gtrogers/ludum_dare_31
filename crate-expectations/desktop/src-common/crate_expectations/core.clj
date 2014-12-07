@@ -69,7 +69,7 @@
                   (crates/flash-crate! screen)
                   crates/arm-crate!
                   crates/open-crate! 
-                  (enemies/logic (find-first :player? entities))
+                  (enemies/logic (find-first :player? entities) screen)
                   (enemies/bullet-collisions entities)
                   (bullets/update-bullet entities) 
                   (mobs/player-collisions entities)

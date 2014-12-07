@@ -1,5 +1,5 @@
 (ns crate-expectations.enemies
-  (:require [play-clj.g2d :refer [texture]]
+  (:require [play-clj.g2d :refer [texture texture! animation play-mode animation->texture]]
             [play-clj.math :refer [rectangle]]
             [play-clj.core :refer [find-first]]
             [crate-expectations.mobs :as mobs]
@@ -8,19 +8,33 @@
 
 (def ^:private enemy-types {
                             :test {:hp 3
-                                   :width 64
+                                   :width 32
                                    :height 64
-                                   :texture "test_enemy.png"}
+                                   :texture "snowmen.png"}
                             })
 
+(defn animate-enemy [screen {:keys [enemy? anim] :as e}]
+  (if enemy? 
+    (merge e (animation->texture screen anim)) 
+    e)
+  )
+
 (defn enemy [x y enemy-type]
-  (let [template (enemy-type enemy-types)]
-    (-> (texture (:texture template)) 
+  (let [template (enemy-type enemy-types)
+        tex (texture! (texture (:texture template)) :split 32 64)
+        sprites (map (fn [i] (texture (aget tex 0 i))) [0 1])
+        anim (animation 0.3 sprites :set-play-mode (play-mode :loop-pingpong))
+        ]
+    (-> (first sprites) 
         (merge (mobs/mob-data x y :spawned-enemy))
-        (assoc :hit-box (rectangle x y (:width template) (:height template)) :enemy? true :hp (:hp template))
+        (assoc :hit-box (rectangle x y (:width template) (:height template))
+               :enemy? true
+               :hp (:hp template)
+               :anim anim
+               )
         )))
 
-(defn logic [player {:keys [enemy? x y x-velocity y-velocity on-floor?] :as e}]
+(defn logic [player screen {:keys [enemy? x y x-velocity y-velocity on-floor?] :as e}]
   (let [player-x (:x player)
         player-y (:y player)] 
     (if enemy?
@@ -31,7 +45,7 @@
             new-y-velocity (cond 
                              (and (< y player-y) on-floor?) 24
                              :default y-velocity)]
-        (-> e
+        (-> (animate-enemy screen e) 
             (assoc :x-velocity new-x-velocity)
             (assoc :y-velocity new-y-velocity)))
       e)))
