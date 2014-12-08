@@ -80,7 +80,7 @@
     (add-timer! screen :spawn-bullets 0 0.2)
     [
      (texture "warehouse.png")
-     (mobs/player 200 100 :player? screen)
+     (mobs/player (texture! (texture "player.png") :split 16 32) 200 100 :player? screen)
      (merge (texture "platform_1.png")
             (platforms/platform-data 0 100 64 8 :platform-1))
      (merge (texture "platform_1.png")

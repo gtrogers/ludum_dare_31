@@ -32,13 +32,13 @@
          :last-hit 0) 
   )
 
-(defn player [x y tag screen]
-  (let [tex (texture! (texture "player.png") :split 16 32) 
+(defn player [textures x y tag screen]
+  (let [tex textures 
         sprites (map (fn [i] (texture (aget tex 0 i))) [0 1 2])
         right-animation (animation 0.15 sprites :set-play-mode (play-mode :loop-pingpong))
         left-animation (animation 0.15 (map #(texture % :flip true false) sprites) :set-play-mode (play-mode :loop-pingpong))
         ]
-    (merge (animation->texture screen right-animation) 
+    (merge (first sprites) 
      (assoc (player-data x y tag) :right-animation right-animation
             :left-animation left-animation
             )) 
