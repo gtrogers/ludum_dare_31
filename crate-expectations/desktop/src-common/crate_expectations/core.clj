@@ -122,7 +122,7 @@
   :on-key-down
   (fn [screen entities]
     (cond 
-      (key-pressed? :r) (on-gl  (set-screen! crate-expectations main-screen)) 
+      (key-pressed? :escape) (System/exit 0) 
       ) 
     )
 
